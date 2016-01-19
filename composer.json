@@ -1,0 +1,14 @@
+{
+    "name": "capsule/stripebridge",
+    "description": "Capsule - Bridge for get Stripe Requests",
+    "authors": [
+        {
+            "name": "Actbold",
+            "email": "fernando@actbold.com"
+        }
+    ],
+    "require": {
+
+    	"stripe/stripe-php": "3.*"
+    }
+}
