@@ -10,7 +10,8 @@ require_once('vendor/autoload.php');
 $error ='';
 $success = '';
 http_response_code(200);
-if ($_REQUEST) {
+
+if (!empty($_REQUEST))  {
 	
 	function create_plan($amount,$interval,$name,$currency,$id){
 	   try {
@@ -75,8 +76,7 @@ if ($_REQUEST) {
 		    return($e->getJsonBody()); 
 	   }
 	}
-
-	if($_REQUEST['requestedOption']){
+	if (!empty($_REQUEST['requestedOption']))  {
 		$requestedOption = $_REQUEST['requestedOption'];
 		header('Content-Type: application/json');
 		switch ($requestedOption) {
