@@ -9,7 +9,7 @@ require_once('vendor/autoload.php');
 
 $error ='';
 $success = '';
-
+http_response_code(200);
 if ($_REQUEST) {
 	
 	function create_plan($amount,$interval,$name,$currency,$id){
@@ -40,11 +40,30 @@ if ($_REQUEST) {
 		));
 		return $customer;
 	   } catch (Exception $e) {
+	   	    http_response_code(404);
 		    return($e->getJsonBody()); 
 	   }
 	   
 	}
     
+    function update_suscription($customer_id,$planID){
+    	/*$customer = \Stripe\Customer::retrieve($customer_id);
+		$subscription = $customer->subscriptions->retrieve($suscription_id);
+		//$subscription->current_period_end = time() + 2592;
+		$subscription->plan = "month_suscription";
+		$subscription->save();
+		return $subscription;*/
+        try {
+			$customer = \Stripe\Customer::retrieve($customer_id);
+			$customer->subscriptions->create(array("plan" => $planID));
+			return $customer;
+	   } catch (Exception $e) {
+	   	    http_response_code(404);
+		    return($e->getJsonBody()); 
+	   }
+
+
+    }
 	
 	function cancel_suscription($customer_id,$suscription_id){
      try {
@@ -52,6 +71,7 @@ if ($_REQUEST) {
 		$subscription = $customer->subscriptions->retrieve($suscription_id);
 		$subscription->cancel();
 	 } catch (Exception $e) {
+	 	    http_response_code(404);
 		    return($e->getJsonBody()); 
 	   }
 	}
@@ -72,19 +92,31 @@ if ($_REQUEST) {
 		        $cancel_suscription_response = cancel_suscription($_REQUEST['customer_id'],$_REQUEST['suscription_id']);
 		        echo json_encode($cancel_suscription_response, JSON_PRETTY_PRINT);
 		        break;
+		    case "update_suscription":
+		    	$update_suscription_response = update_suscription($_REQUEST['customer_id'],$_REQUEST['planID']);
+		        echo json_encode($update_suscription_response, JSON_PRETTY_PRINT);
+		        break;
 		    default:
-		        $error = array('Error' => 'Invalid Request');
+		        http_response_code(404);
+		        $message = array("message" => "Invalid Request");
+		        $error = array('error' => $message);
    				echo json_encode($error);
 			}
 	}
 	else{
-		$error = array('Error' => 'Invalid Request');
+		header('Content-Type: application/json');
+		http_response_code(404);
+		$message = array("message" => "Invalid Request");
+		$error = array('error' => $message);
    		echo json_encode($error);
 	}
 
 
 }else{
-   $error = array('Error' => 'Invalid Request');
+   header('Content-Type: application/json');
+   http_response_code(404);
+   $message = array("message" => "Invalid Request");
+   $error = array('error' => $message);
    echo json_encode($error);
 }
 ?>
